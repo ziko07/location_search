@@ -1,0 +1,41 @@
+<%= form_for @location do |f| %>
+    <div class="col-lg-6">
+      <%= f.text_field :location, :class => 'form-control', :onkeypress => 'return noSubmitOnReturn(event)' %>
+      <%= f.hidden_field :lat, :class => 'form-control' %>
+      <%= f.hidden_field :lng, :class => 'form-control' %>
+    </div>
+    <div class="col-lg-6">
+      <div class="pull-left">
+        <button type="submit" class="btn btn-primary">
+          Search <i class="fa fa-search"> </i>
+        </button>
+      </div>
+    </div>
+<% end %>
+<script type="text/javascript">
+    var autocomplete;
+    function init_autocomplete() {
+        var input = (document.getElementById('location_location'));
+        var countryRestrict = {'country': 'us'};
+        var options = {
+            componentRestrictions: countryRestrict
+        };
+        autocomplete = new google.maps.places.Autocomplete(input, options);
+        autocomplete.addListener('place_changed', get_place);
+    }
+
+    function get_place() {
+        var place = autocomplete.getPlace();
+        var lat = place.geometry.location.lat();
+        var lng = place.geometry.location.lng();
+        $("#location_lat").val(lat);
+        $("#location_lng").val(lng);
+    }
+
+    function noSubmitOnReturn(e) {
+        if (e.keyCode == 13) {
+            return false;
+        }
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-m1XVD7c3PfBX_oxxKijOqeyNNqOSUW0&libraries=places&callback=init_autocomplete" async defer></script>
