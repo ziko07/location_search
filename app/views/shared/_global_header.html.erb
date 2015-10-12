@@ -3,10 +3,10 @@
     <div class="container-fluid">
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav menu-ul">
-          <li class="active">
+          <li class="<%= active_tab('locations', %w(new show edit)) %>">
             <%= link_to 'Home', root_path, 'data-no-turbolink' => true %>
           </li>
-          <li>
+          <li class="<%= active_tab('locations', ['index']) %>">
             <%= link_to 'View Restaurant', locations_path, 'data-no-turbolink' => true %>
           </li>
         </ul>

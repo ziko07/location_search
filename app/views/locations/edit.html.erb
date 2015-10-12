@@ -1,80 +1,52 @@
 <div id="map-wrapper">
-  <input id="pac-input" class="controls" type="text" placeholder="Enter a location">
+  <div class="col-lg-6">
+    <h3 class="select-business"> Select your business </h3>
+    <address>
+      <%= @location.location %>
+    </address>
 
-  <div id="restaurant-search-map"></div>
-</div>
-<div class="update-location">
-  <%= form_for @location do |f| %>
-      <%= f.hidden_field :photo %>
-      <%= f.hidden_field :title %>
-      <%= f.hidden_field :lat %>
-      <%= f.hidden_field :lng %>
-      <%= f.submit :class => 'btn btn-warning pull-right update-location' %>
-  <% end %>
+    <div class="fields form-group">
+      <input id="pac-input" class="form-control" type="text" placeholder="Enter a business name">
+    </div>
+
+    <div class="update-location">
+      <%= form_for @location do |f| %>
+          <%= f.hidden_field :photo %>
+          <%= f.hidden_field :title %>
+          <%= f.hidden_field :lat %>
+          <%= f.hidden_field :lng %>
+          <button type="submit" class="btn btn-warning pull-right update-location">
+            <i class="fa fa-repeat"> </i> Update Business Location
+          </button>
+      <% end %>
+    </div>
+  </div>
 </div>
 
 <script>
+
+    var autocomplete;
+
     function initMap() {
         var countryRestrict = {'country': 'us'};
+        var location = {lat: <%= @location.lat %>, lng: <%= @location.lng %>};
         var options = {
-            componentRestrictions: countryRestrict
+            componentRestrictions: countryRestrict,
+            types: ['establishment'],
+            location: location
         };
-        var map = new google.maps.Map(document.getElementById('restaurant-search-map'), {
-            center: {lat: <%= @location.lat %>, lng: <%= @location.lng %>},
-            zoom: 7
-        });
+
         var input = (document.getElementById('pac-input'));
 
-        var autocomplete = new google.maps.places.Autocomplete(input, options);
-        autocomplete.bindTo('bounds', map);
-
-        var infowindow = new google.maps.InfoWindow();
-        var marker = new google.maps.Marker({
-            map: map,
-            anchorPoint: new google.maps.Point(0, -29)
-        });
+        autocomplete = new google.maps.places.Autocomplete(input, options);
 
         autocomplete.addListener('place_changed', function () {
-            infowindow.close();
-            marker.setVisible(false);
             var place = autocomplete.getPlace();
             if (!place.geometry) {
                 window.alert("Autocomplete's returned place contains no geometry");
                 return;
             }
-
-            console.log(place);
             set_location_details(place);
-
-
-            // If the place has a geometry, then present it on a map.
-            if (place.geometry.viewport) {
-                map.fitBounds(place.geometry.viewport);
-            } else {
-                map.setCenter(place.geometry.location);
-                map.setZoom(17);  // Why 17? Because it looks good.
-            }
-            marker.setIcon(/** @type {google.maps.Icon} */({
-                url: place.icon,
-                size: new google.maps.Size(71, 71),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(17, 34),
-                scaledSize: new google.maps.Size(35, 35)
-            }));
-            marker.setPosition(place.geometry.location);
-            marker.setVisible(true);
-
-            var address = '';
-            if (place.address_components) {
-                address = [
-                    (place.address_components[0] && place.address_components[0].short_name || ''),
-                    (place.address_components[1] && place.address_components[1].short_name || ''),
-                    (place.address_components[2] && place.address_components[2].short_name || '')
-                ].join(' ');
-            }
-
-            infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
-            infowindow.open(map, marker);
         });
     }
 

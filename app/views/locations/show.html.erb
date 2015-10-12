@@ -3,7 +3,11 @@
   <address>
     <%= @location.location %>
   </address>
-  <%= image_tag(@location.photo) %>
+  <% if @location.photo.present? %>
+      <%= image_tag(@location.photo) %>
+  <% else %>
+      <span> No image found </span>
+  <% end %>
 </div>
 
 <div class="col-lg-6">
